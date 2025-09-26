@@ -10,6 +10,7 @@ import efub.assignment.community.post.dto.response.PostListResponseDto;
 import efub.assignment.community.post.dto.response.PostResponseDto;
 import efub.assignment.community.post.dto.request.UpdateContentDto;
 import efub.assignment.community.post.repository.PostRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +28,9 @@ public class PostService {
     // 게시글 생성
     @Transactional
     public PostResponseDto createPost(PostCreateRequestDto postCreateRequestDto) {
-        Board board = boardRepository.findByBoardId(postCreateRequestDto.boardId())
-                .orElseThrow(() -> new RuntimeException("Board not found"));
-        Member author = memberRepository.findByMemberId(postCreateRequestDto.authorId())
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+        Board board = findBoardOrThrow(postCreateRequestDto.boardId());
+        Member author = findMemberOrThrow(postCreateRequestDto.authorId());
+
         Post post = postCreateRequestDto.toEntity(board, author);
         Post savedPost = postRepository.save(post);
         return PostResponseDto.from(savedPost);
@@ -68,5 +68,15 @@ public class PostService {
     @Transactional
     public void deletePost(Long postId) {
         postRepository.deleteByPostId(postId);
+    }
+
+    private Board findBoardOrThrow(Long boardId) {
+        return boardRepository.findByBoardId(boardId)
+                .orElseThrow(() -> new EntityNotFoundException("Board not found with id: " + boardId));
+    }
+
+    private Member findMemberOrThrow(Long memberId) {
+        return memberRepository.findByMemberId(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
     }
 }
