@@ -24,15 +24,15 @@ public class Member extends BaseEntity {
     private Long memberId;
 
     // 학번
-    @Column (nullable = false, length = 20, unique = true)
+    @Column (nullable = true, length = 20, unique = true)
     private String studentId;
 
     // 대학
-    @Column (nullable = false, length = 100)
+    @Column (nullable = true, length = 100)
     private String university;
 
     // 닉네임
-    @Column (nullable = false, length = 8)
+    @Column (nullable = false)
     private String nickname;
 
     // 이메일
