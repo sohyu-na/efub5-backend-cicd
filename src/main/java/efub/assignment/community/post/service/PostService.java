@@ -79,4 +79,12 @@ public class PostService {
         return memberRepository.findByMemberId(memberId)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found with id: " + memberId));
     }
+
+    //게시글 검색
+    @Transactional(readOnly = true)
+    public List<PostResponseDto> searchPost(String keyword, String writerNickname){
+        return postRepository.search(keyword,writerNickname).stream()
+                .map(PostResponseDto :: from)
+                .toList();
+    }
 }
